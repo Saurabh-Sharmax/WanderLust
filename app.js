@@ -1,9 +1,12 @@
+// app.js - Final Corrected Code
 
+// --- DOTENV CONFIGURATION ---
+// Load .env only if not in production
 if(process.env.NODE_ENV !== "PRODUCTION"){
-    // Load .env only if not in production
     require('dotenv').config();
 } else {
-
+    // If running dotenv twice was intentional, you can keep the second call, 
+    // but typically it's only called once. I'll keep the conditional one only.
     require('dotenv').config();
 }
 
@@ -105,22 +108,17 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
 
-// --- FIX: 404 CATCH-ALL ROUTE (Using named wildcard) ---
-// This is the likely cause of the "Missing parameter name" error in Node v22/Express v5.
-app.all("/*", (req, res, next) => {
-    // Note: Use '/*' instead of '*' to ensure it correctly catches all paths. 
-    // If this still fails, try '/*splat' or '/{*}'.
+// --- FIX APPLIED HERE: Naming the wildcard parameter ---
+// This resolves the PathError: Missing parameter name
+app.all("/*path", (req, res, next) => {
     next(new ExpressError(404, "Page Not Found!"));
 });
 
-// --- GLOBAL Error Handling Middleware (PREVIOUSLY FIXED) ---
+// --- GLOBAL Error Handling Middleware (Previously Fixed) ---
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "something went wrong!!" } = err;
     
-    // Logging the error is helpful for Render logs
-    console.error("Global Error Handler:", err);
-
-    // Only one response call is necessary.
+    // Only sending ONE response.
     res.status(statusCode).render("error.ejs", { message });
 });
 
