@@ -1,6 +1,7 @@
 if(process.env.NODE_ENV != "PRODUCTION"){
     require('dotenv').config();
 }
+
 require('dotenv').config();
 
 
@@ -15,7 +16,7 @@ const session = require("express-session");
 const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");
 const passport = require("passport");
-const LocalStrategy =  require("passport-local");
+const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
 
@@ -51,7 +52,7 @@ const store = MongoStore.create({
     touchAfter: 24* 3600,
 });
 
-store.on("error",()=>{
+store.on("error",(err)=>{ // Added 'err' argument for better logging
     console.log("ERROR IN MONGO SESSION STORE", err)
 });
 
@@ -63,8 +64,8 @@ const sessionOption = {
     cookie:{
         expires: Date.now()+7*24*60*60*1000,
         maxAge: 7*24*60*60*1000,
-        httpsOnly: true,
-       
+        httpOnly: true, // Corrected typo from httpsOnly to httpOnly for security
+        
     },
 } 
 
@@ -101,14 +102,20 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
 
-app.all(/.*/, (req, res, next) => {
+// 404 Error Handler
+app.all("*", (req, res, next) => { // Changed /. */ to * for clarity
     next(new ExpressError(404, "Page Not Found!"));
 });
 
+// GLOBAL Error Handling Middleware (FIXED)
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "something went wrong!!" } = err;
+    
+    // The previous code had two response calls, causing the error.
+    // We only keep the res.render() call.
     res.status(statusCode).render("error.ejs", { message });
-    res.status(statusCode).send(message);
+    
+ 
 });
 
 
