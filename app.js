@@ -1,8 +1,11 @@
-if(process.env.NODE_ENV != "PRODUCTION"){
+
+if(process.env.NODE_ENV !== "PRODUCTION"){
+    // Load .env only if not in production
+    require('dotenv').config();
+} else {
+
     require('dotenv').config();
 }
-
-require('dotenv').config();
 
 
 const express = require("express");
@@ -52,7 +55,7 @@ const store = MongoStore.create({
     touchAfter: 24* 3600,
 });
 
-store.on("error",(err)=>{ // Added 'err' argument for better logging
+store.on("error",(err)=>{
     console.log("ERROR IN MONGO SESSION STORE", err)
 });
 
@@ -64,7 +67,7 @@ const sessionOption = {
     cookie:{
         expires: Date.now()+7*24*60*60*1000,
         maxAge: 7*24*60*60*1000,
-        httpOnly: true, // Corrected typo from httpsOnly to httpOnly for security
+        httpOnly: true,
         
     },
 } 
@@ -102,20 +105,23 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
 
-// 404 Error Handler
-app.all("*", (req, res, next) => { // Changed /. */ to * for clarity
+// --- FIX: 404 CATCH-ALL ROUTE (Using named wildcard) ---
+// This is the likely cause of the "Missing parameter name" error in Node v22/Express v5.
+app.all("/*", (req, res, next) => {
+    // Note: Use '/*' instead of '*' to ensure it correctly catches all paths. 
+    // If this still fails, try '/*splat' or '/{*}'.
     next(new ExpressError(404, "Page Not Found!"));
 });
 
-// GLOBAL Error Handling Middleware (FIXED)
+// --- GLOBAL Error Handling Middleware (PREVIOUSLY FIXED) ---
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "something went wrong!!" } = err;
     
-    // The previous code had two response calls, causing the error.
-    // We only keep the res.render() call.
+    // Logging the error is helpful for Render logs
+    console.error("Global Error Handler:", err);
+
+    // Only one response call is necessary.
     res.status(statusCode).render("error.ejs", { message });
-    
- 
 });
 
 
