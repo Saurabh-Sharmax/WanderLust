@@ -24,7 +24,7 @@ module.exports.listingSchema = joi.object({
         "Beaches",
       )
       .required(),
-    image: joi.string().uri().allow("", null)
+    image: joi.string().url().allow("", null)
   }).required()
 });
 
