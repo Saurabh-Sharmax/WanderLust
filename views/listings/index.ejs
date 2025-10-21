@@ -1,0 +1,220 @@
+<%- layout("layouts/boilerplate") %>
+
+<style>
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #fff;
+  }
+
+  /* ===== Filter Bar Container ===== */
+  .filter-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 0.5rem 0;
+  }
+
+  /* ===== Scrollable Filters ===== */
+  #filters {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 2rem;
+    padding: 0 3rem;
+    scrollbar-width: none;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  #filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ===== Individual Filter Item ===== */
+  .filter {
+    flex: 0 0 auto;
+    text-align: center;
+    opacity: 0.7;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .filter:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+
+  .filter p {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .filter.active {
+    opacity: 1;
+    border-bottom: 2px solid #ff385c;
+    padding-bottom: 4px;
+  }
+
+  /* ===== Arrow Buttons ===== */
+  .scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    transition: background 0.2s;
+  }
+
+  .scroll-btn:hover {
+    background: #f5f5f5;
+  }
+
+  .scroll-left {
+    left: 10px;
+  }
+
+  .scroll-right {
+    right: 10px;
+  }
+
+  @media (max-width: 576px) {
+    .scroll-btn {
+      display: none;
+    }
+  }
+
+  /* ===== Tax Toggle Section ===== */
+  .tax-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1rem 2rem;
+  }
+
+  .listing-card {
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease;
+  }
+
+  .listing-card:hover {
+    transform: scale(1.02);
+  }
+
+  .listing-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .taxInfo {
+    display: none;
+  }
+</style>
+
+<!-- ===== Airbnb-style Filter Bar ===== -->
+<div class="filter-container">
+  <div class="scroll-btn scroll-left"><i class="fa-solid fa-chevron-left"></i></div>
+
+  <div id="filters">
+    <div class="filter" data-category="All"><i class="fa-solid fa-globe fa-lg"></i><p>All</p></div>
+    <div class="filter" data-category="Trending"><i class="fa-solid fa-fire fa-lg"></i><p>Trending</p></div>
+    <div class="filter" data-category="Rooms"><i class="fa-solid fa-bed fa-lg"></i><p>Rooms</p></div>
+    <div class="filter" data-category="Iconic Cities"><i class="fa-solid fa-mountain-city fa-lg"></i><p>Iconic Cities</p></div>
+    <div class="filter" data-category="Mountains"><i class="fa-solid fa-mountain fa-lg"></i><p>Mountains</p></div>
+    <div class="filter" data-category="Castles"><i class="fa-brands fa-fort-awesome fa-lg"></i><p>Castles</p></div>
+    <div class="filter" data-category="Amazing Pools"><i class="fa-solid fa-person-swimming fa-lg"></i><p>Amazing Pools</p></div>
+    <div class="filter" data-category="Camping"><i class="fa-solid fa-campground fa-lg"></i><p>Camping</p></div>
+    <div class="filter" data-category="Farms"><i class="fa-solid fa-cow fa-lg"></i><p>Farms</p></div>
+    <div class="filter" data-category="Arctic"><i class="fa-solid fa-snowflake fa-lg"></i><p>Arctic</p></div>
+    <div class="filter" data-category="Forests"><i class="fa-solid fa-tree fa-lg"></i><p>Forests</p></div>
+    <div class="filter" data-category="Lakes"><i class="fa-solid fa-water fa-lg"></i><p>Lakes</p></div>
+    <div class="filter" data-category="Beaches"><i class="fa-solid fa-umbrella-beach fa-lg"></i><p>Beaches</p></div>
+  </div>
+
+  <div class="scroll-btn scroll-right"><i class="fa-solid fa-chevron-right"></i></div>
+</div>
+
+<!-- ===== Tax Toggle Switch ===== -->
+<div class="tax-toggle">
+  <div class="form-check-reverse form-switch">
+    <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+    <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+  </div>
+</div>
+
+<!-- ===== Listings Section ===== -->
+<div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 mt-3">
+  <% for (let listing of allListings) { %>
+    <a href="/listings/<%= listing._id %>" class="listing-link">
+      <div class="card col listing-card listing" data-category="<%= listing.category %>">
+        <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
+        <div class="card-body">
+          <p class="card-text">
+            <b><%= listing.title %></b><br>
+            &#x20B9;<%= listing.price ? listing.price.toLocaleString("en-IN") : "0" %>/night
+            <i class="taxInfo"> &nbsp; &nbsp;+18% GST</i>
+          </p>
+        </div>
+      </div>
+    </a>
+  <% } %>
+</div>
+
+<!-- ===== JS for Scroll, Tax Toggle, and Filters ===== -->
+<script>
+  const filtersContainer = document.getElementById('filters');
+  const leftBtn = document.querySelector('.scroll-left');
+  const rightBtn = document.querySelector('.scroll-right');
+  const filterItems = document.querySelectorAll('.filter');
+  const listings = document.querySelectorAll('.listing');
+  const taxSwitch = document.getElementById("switchCheckDefault");
+  const scrollAmount = 300;
+
+  // Scroll buttons
+  rightBtn.addEventListener('click', () => {
+    filtersContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  });
+  leftBtn.addEventListener('click', () => {
+    filtersContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  });
+
+  // Tax toggle
+  taxSwitch.addEventListener("change", () => {
+    const taxInfo = document.getElementsByClassName("taxInfo");
+    for (let info of taxInfo) {
+      info.style.display = taxSwitch.checked ? "inline" : "none";
+    }
+  });
+
+  // Filtering logic
+  filterItems.forEach(filter => {
+    filter.addEventListener("click", () => {
+      filterItems.forEach(f => f.classList.remove("active"));
+      filter.classList.add("active");
+
+      const category = filter.dataset.category;
+
+      listings.forEach(listing => {
+        if (category === "All" || listing.dataset.category === category) {
+          listing.style.display = "block";
+        } else {
+          listing.style.display = "none";
+        }
+      });
+    });
+  });
+
+  // Show all listings on load
+  listings.forEach(listing => (listing.style.display = "block"));
+</script>

@@ -1,0 +1,68 @@
+<%- layout("layouts/boilerplate") %>
+    <div class="row">
+        <div class="col-8 offset-2">
+            <h3>Create a New Listing</h3>
+            <form action="/listings" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
+                <div class="mb-3"> <label for="title" class="form-label">Title</label>
+                    <input type="text" name="listing[title]" id="title" placeholder="Enter Catchy Title"
+                        class="form-control" required>
+                    <div class="invalid-feedback">Title should be valid</div>
+                    <div class="valid-feedback">Title Looks Good!!</div>
+                </div>
+
+                <div class="mb-3"><label for="description" class="form-label">Description</label>
+                    <textarea name="listing[description]" id="description" placeholder="Enter description"
+                        class="form-control" required></textarea>
+                    <div class="invalid-feedback">Description should be Short!!</div>
+                    <div class="valid-feedback">Description Looks Good!!</div>
+
+                </div>
+                <div class="form-group mb-3">
+                    <label for="category">Category</label>
+                    <select id="category" name="listing[category]" class="form-control" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="Trending">Trending</option>
+                        <option value="Rooms">Rooms</option>
+                        <option value="Iconic Cities">Iconic Cities</option>
+                        <option value="Mountains">Mountains</option>
+                        <option value="Castles">Castles</option>
+                        <option value="Amazing Pools">Amazing Pools</option>
+                        <option value="Camping">Camping</option>
+                        <option value="Farms">Farms</option>
+                        <option value="Arctic">Arctic</option>
+                         <option value="Forests">Forests</option>
+                        <option value="Lakes">Lakes</option>
+                        <option value="Beaches">Beaches</option>
+                    </select>
+                </div>
+
+                <div class="mb-3"> <label for="image" class="form-label">Upload Listing Image</label>
+                    <input type="file" name="listing[image]" id="image" class="form-control" required />
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-4"><label for="price" class="form-label">Price</label>
+                        <input type="number" name="listing[price]" id="price" placeholder="1200" class="form-control"
+                            min="0" required>
+                        <div class="invalid-feedback">Price should be valid</div>
+                        <div class="valid-feedback">Price Looks Good!!</div>
+                    </div>
+                    <div class="mb-3 col-md-8"> <label for="country" class="form-label">Country</label>
+                        <input type="text" name="listing[country]" id="country" placeholder="India" class="form-control"
+                            required>
+                        <div class="invalid-feedback">Country Name should be valid</div>
+                        <div class="valid-feedback">Country Name Looks Good!!</div>
+                    </div>
+                </div>
+
+                <div class="mb-3"> <label for="location" class="form-label">Location</label>
+                    <input type="text" name="listing[location]" id="location"
+                        placeholder="Jaipur, Lucknow, Uttarakhand ...." class="form-control" required>
+                    <div class="invalid-feedback">Location should be valid</div>
+                    <div class="valid-feedback">Location Looks Good!!</div>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-dark add-btn mb-3 ">Add</button>
+            </form>
+        </div>
+    </div>
