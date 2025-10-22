@@ -1,7 +1,6 @@
 <%- layout("layouts/boilerplate") %>
 
 <style>
-  /* ... (CSS is unchanged and omitted for brevity) ... */
   body {
     margin: 0;
     font-family: sans-serif;
@@ -76,7 +75,7 @@
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 10;
-    transition: background 0.2s;
+    
   }
 
   .scroll-btn:hover {
@@ -123,6 +122,7 @@
   }
 </style>
 
+<!-- ===== Airbnb-style Filter Bar ===== -->
 <div class="filter-container">
   <div class="scroll-btn scroll-left"><i class="fa-solid fa-chevron-left"></i></div>
 
@@ -145,6 +145,7 @@
   <div class="scroll-btn scroll-right"><i class="fa-solid fa-chevron-right"></i></div>
 </div>
 
+<!-- ===== Tax Toggle Switch ===== -->
 <div class="tax-toggle">
   <div class="form-check-reverse form-switch">
     <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
@@ -152,15 +153,16 @@
   </div>
 </div>
 
+<!-- ===== Listings Section ===== -->
 <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 mt-3">
   <% for (let listing of allListings) { %>
     <a href="/listings/<%= listing._id %>" class="listing-link">
-      <div class="card col listing-card listing" data-category="<%= listing.category %>" data-price="<%= listing.price || 0 %>">
+      <div class="card col listing-card listing" data-category="<%= listing.category %>">
         <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
         <div class="card-body">
           <p class="card-text">
             <b><%= listing.title %></b><br>
-            <span class="listing-price">&#x20B9;<%= listing.price ? listing.price.toLocaleString("en-IN") : "0" %></span>/night
+            &#x20B9;<%= listing.price ? listing.price.toLocaleString("en-IN") : "0" %>/night
             <i class="taxInfo"> &nbsp; &nbsp;+18% GST</i>
           </p>
         </div>
@@ -169,6 +171,7 @@
   <% } %>
 </div>
 
+<!-- ===== JS for Scroll, Tax Toggle, and Filters ===== -->
 <script>
   const filtersContainer = document.getElementById('filters');
   const leftBtn = document.querySelector('.scroll-left');
@@ -177,12 +180,8 @@
   const listings = document.querySelectorAll('.listing');
   const taxSwitch = document.getElementById("switchCheckDefault");
   const scrollAmount = 300;
-  const TAX_RATE = 0.18; // 18%
 
-  // Fix 2: Set the initial active filter to "All"
-  document.querySelector('.filter[data-category="All"]').classList.add("active");
-
-  // Scroll buttons (Unchanged)
+  // Scroll buttons
   rightBtn.addEventListener('click', () => {
     filtersContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   });
@@ -190,32 +189,15 @@
     filtersContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
   });
 
-  // Fix 1: Tax toggle logic - Now calculates and updates price
+  // Tax toggle
   taxSwitch.addEventListener("change", () => {
     const taxInfo = document.getElementsByClassName("taxInfo");
-    
-    for (let listing of listings) {
-        const basePrice = Number(listing.dataset.price);
-        const priceElement = listing.querySelector(".listing-price");
-        
-        if (taxSwitch.checked) {
-            // Calculate total price
-            const totalPrice = basePrice * (1 + TAX_RATE);
-            // Update the display price
-            priceElement.textContent = `₹${totalPrice.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
-        } else {
-            // Revert to base price
-            priceElement.textContent = `₹${basePrice.toLocaleString("en-IN")}`;
-        }
-    }
-
-    // Toggle visibility of the tax text
     for (let info of taxInfo) {
       info.style.display = taxSwitch.checked ? "inline" : "none";
     }
   });
 
-  // Filtering logic (Unchanged)
+  // Filtering logic
   filterItems.forEach(filter => {
     filter.addEventListener("click", () => {
       filterItems.forEach(f => f.classList.remove("active"));
@@ -233,6 +215,6 @@
     });
   });
 
-  // Show all listings on load (Unchanged - still necessary)
+  // Show all listings on load
   listings.forEach(listing => (listing.style.display = "block"));
 </script>
