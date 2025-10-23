@@ -2,6 +2,8 @@
 if (process.env.NODE_ENV !== "PRODUCTION") {
     require('dotenv').config();
 }
+const { cloudinary, storage } = require('./cloudConfig.js');
+console.log("Cloudinary API Key:", process.env.CLOUDINARY_API_KEY);
 
 const express = require("express");
 const app = express();
