@@ -93,8 +93,8 @@ app.all(/.*/, (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error("Error caught:", err);
-    const { statusCode = 500, message = "Something went wrong!!" } = err;
+    console.log("🔥 ERROR DETAILS:", err); // 👈 Add this line
+    const { statusCode = 500, message = "Something went wrong" } = err;
     res.status(statusCode).render("error.ejs", { message });
 });
 
