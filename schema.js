@@ -24,7 +24,7 @@ module.exports.listingSchema = joi.object({
         "Beaches",
       )
       .required(),
-    image: joi.string().url().allow("", null)
+    image: joi.string().uri().allow("", null)
   }).required(),
 });
 module.exports.reviewSchema = joi.object({
